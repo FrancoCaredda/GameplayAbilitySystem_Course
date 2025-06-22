@@ -13,6 +13,8 @@ Intermediate/
 
 .vscode/
 .vs/
+.idea/
+*.vsconfig
 *.VC.db
 *.opensdf
 *.opendb
