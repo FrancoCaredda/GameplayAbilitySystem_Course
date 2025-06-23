@@ -7,12 +7,45 @@
 #include "EnhancedInputComponent.h"
 #include "InputAction.h"
 #include "InputActionValue.h"
+#include "Interface/HighlightInterface.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
 	// A change of the instance on the server will
 	// be replicated (sent) to all clients 
 	bReplicates = true;
+}
+
+void AAuraPlayerController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	FHitResult Hit;
+
+	if (GetHitResultUnderCursor(ECC_Visibility, false, Hit))
+	{
+		LastActor = CurrentActor;
+		CurrentActor = Hit.GetActor();
+
+		// Don't understand why the author has nested so many "if" statements
+		// It can simply be rewritten like this
+		if (LastActor == CurrentActor && LastActor) // This check might prevent the post-processing's enabling/disabling cost
+		{
+			return;
+		}
+
+		// If both actors are null, neither of these will be called
+		// However if one of these is valid, it'll be called
+		if (LastActor)
+		{
+			LastActor->UnHighlightActor();
+		}
+
+		if (CurrentActor)
+		{
+			CurrentActor->HighlightActor();
+		}
+	}
 }
 
 void AAuraPlayerController::BeginPlay()
@@ -43,7 +76,7 @@ void AAuraPlayerController::SetupInputComponent()
 
 	UEnhancedInputComponent* EnhancedInputComponent =
 		CastChecked<UEnhancedInputComponent>(InputComponent);
-
+	
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this,
 		&AAuraPlayerController::OnMoveActionTriggered);
 }
