@@ -3,10 +3,11 @@
 
 #include "Characters/AuraCharacter.h"
 
-#include "MovieSceneTracksComponentTypes.h"
+#include "AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Player/AuraPlayerState.h"
 
 AAuraCharacter::AAuraCharacter()
 {
@@ -32,4 +33,37 @@ AAuraCharacter::AAuraCharacter()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
+}
+
+// This function is called when the character is possessed on the server
+// Here we set up the AbilitySystemComponent for the server
+void AAuraCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	InitAbilityActorInfo();
+}
+
+// This function is called when the player state associated with this character has been replicated to the client
+// Here we set up the AbilitySystemComponent for the client
+void AAuraCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	InitAbilityActorInfo();
+}
+
+void AAuraCharacter::InitAbilityActorInfo()
+{
+	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+	check(AuraPlayerState);
+	AbilitySystemComponent = AuraPlayerState->GetAbilitySystemComponent();
+	AttributeSet = AuraPlayerState->GetAttributeSet();
+
+	// This function provides the information about the owner of the component to the AbilitySystemComponent
+	// There are two types of owners: a physical one and an avatar.
+	// The physical owner is the actor that contains the component (in our case the PlayerState)
+	// The avatar is the actor that will operate with this component (in out case the Character)
+	// However there are cases when both of these pointers point to the same object (for ex. AI controlled characters)
+	AbilitySystemComponent->InitAbilityActorInfo(AuraPlayerState, this);
 }
