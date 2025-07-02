@@ -8,6 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Player/AuraPlayerState.h"
+#include "UI/HUD/AuraHUD.h"
 
 AAuraCharacter::AAuraCharacter()
 {
@@ -42,6 +43,7 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	InitAbilityActorInfo();
+	InitHUD();
 }
 
 // This function is called when the player state associated with this character has been replicated to the client
@@ -51,6 +53,7 @@ void AAuraCharacter::OnRep_PlayerState()
 	Super::OnRep_PlayerState();
 
 	InitAbilityActorInfo();
+	InitHUD();
 }
 
 void AAuraCharacter::InitAbilityActorInfo()
@@ -66,4 +69,20 @@ void AAuraCharacter::InitAbilityActorInfo()
 	// The avatar is the actor that will operate with this component (in out case the Character)
 	// However there are cases when both of these pointers point to the same object (for ex. AI controlled characters)
 	AbilitySystemComponent->InitAbilityActorInfo(AuraPlayerState, this);
+}
+
+void AAuraCharacter::InitHUD() const
+{
+	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+	check(AuraPlayerState);
+
+	// We have to check if this is valid, because controllers of the other characters won't be available to us
+	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	{
+		// HUD is only valid for the local player, not server
+		if (AAuraHUD* HUD = Cast<AAuraHUD>(PlayerController->GetHUD()))
+		{
+			HUD->InitOverlay(PlayerController, AuraPlayerState, AbilitySystemComponent, AttributeSet);
+		}
+	}
 }

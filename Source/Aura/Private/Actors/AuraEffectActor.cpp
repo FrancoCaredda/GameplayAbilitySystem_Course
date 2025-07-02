@@ -30,6 +30,8 @@ void AAuraEffectActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 		// Use gameplay effects to modify attributes' values and to have client-side prediction
 		const_cast<UAuraAttributeSet*>(AuraAttributeSet)->
 			SetHealth(AuraAttributeSet->GetHealth() + 25.0f);
+		const_cast<UAuraAttributeSet*>(AuraAttributeSet)->
+			SetMana(AuraAttributeSet->GetMana() - 25.0f);
 
 		Destroy();
 	}

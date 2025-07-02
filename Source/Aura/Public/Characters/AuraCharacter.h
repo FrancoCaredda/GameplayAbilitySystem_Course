@@ -20,6 +20,7 @@ public:
 	virtual void OnRep_PlayerState() override;
 private:
 	void InitAbilityActorInfo();
+	void InitHUD() const;
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<USpringArmComponent> SpringArmComponent;
