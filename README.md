@@ -5,3 +5,6 @@ This project contains explanations inside the code files, and serves as a notepa
 This repository contains only the source code. No assets are provided here.
 ## Content
 1. Here will be the content and link to a file.
+
+## Useful Resources
+* [The Gameplay Ability System Documentation by Tranek](https://github.com/tranek/GASDocumentation?tab=readme-ov-file#intro)
