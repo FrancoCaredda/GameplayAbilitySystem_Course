@@ -41,6 +41,10 @@ public:
 
 	ATTRIBUTE_ACCESSORS_BASIC(UAuraAttributeSet, MaxMana)
 public:
+	// An attribute contains two floats: BaseValue and CurrentValue.
+	// The BaseValue isn't the maximum value of this attribute.
+	// The BaseValue is the permanent value of the attribute and serves for permanent changes, such as: receiving damage, healing, etc.
+	// The CurrentValue is the temporary value of the attribute and serves for temporary changes, such as: buffs and debuffs.
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health, Category = "Vital Attributes")
 	FGameplayAttributeData Health;
 
