@@ -35,7 +35,73 @@ void AAuraEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGam
 		// IMPORTANT: UGameplayEffect shouldn't contain any custom logic. It should be extended via blueprints and serve as data blueprint classes.
 		FGameplayEffectSpecHandle SpecHandle =
 			AbilitySystemComponent->MakeOutgoingSpec(EffectToApplyClass, 1.0f, EffectContextHandle);
-		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+		FActiveGameplayEffectHandle ActiveGameplayEffectHandle =
+			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+
+		const bool bInfinite = SpecHandle.Data->Def->DurationPolicy ==
+			EGameplayEffectDurationType::Infinite;
+
+		if (bInfinite &&
+			InfiniteEffectRemovalPolicy == EEffectRemovalPolicy::RemoveOnEndOverlap) 
+		{
+			ActiveGameplayEffects.Add(AbilitySystemComponent, ActiveGameplayEffectHandle);
+		}
+	}
+}
+
+void AAuraEffectActor::Overlap(AActor* TargetActor)
+{
+	if (InstantEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnOverlap)
+	{
+		ApplyEffectToTarget(TargetActor, InstantGameplayEffectClass);
+	}
+
+	if (DurationEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnOverlap)
+	{
+		ApplyEffectToTarget(TargetActor, DurationGameplayEffectClass);
+	}
+
+	if (InfiniteEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnOverlap)
+	{
+		ApplyEffectToTarget(TargetActor, InfiniteGameplayEffectClass);
+	}
+}
+
+void AAuraEffectActor::EndOverlap(AActor* TargetActor)
+{
+	if (InstantEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnOverlap)
+	{
+		ApplyEffectToTarget(TargetActor, InstantGameplayEffectClass);
+	}
+	
+	if (DurationEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnOverlap)
+	{
+		ApplyEffectToTarget(TargetActor, DurationGameplayEffectClass);
+	}
+
+	if (InfiniteEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnEndOverlap)
+	{
+		ApplyEffectToTarget(TargetActor, InfiniteGameplayEffectClass);
+	}
+
+	if (InfiniteEffectRemovalPolicy == EEffectRemovalPolicy::RemoveOnEndOverlap)
+	{
+		UAbilitySystemComponent* AbilitySystemComponent =
+			UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
+
+		// The author of the course used a loop here to iterate through the map.
+		// It can be avoided by simply swaping the types of keys and values when declaring the map.
+		// Will it crush? - I believe it'll not. Why? - Considering that the lifetime of the objects is handled by the GC the pointer should be safe.
+		// If I'm wrong, TWeakPtr should be used instead.
+		if (AbilitySystemComponent &&
+			ActiveGameplayEffects.Contains(AbilitySystemComponent))
+		{
+			FActiveGameplayEffectHandle ActiveGameplayEffectHandle =
+				ActiveGameplayEffects[AbilitySystemComponent];
+
+			AbilitySystemComponent->RemoveActiveGameplayEffect(ActiveGameplayEffectHandle, 1);
+			ActiveGameplayEffects.Remove(AbilitySystemComponent);
+		}
 	}
 }
 
