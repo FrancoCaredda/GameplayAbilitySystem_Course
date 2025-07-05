@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Containers/Map.h"
 #include "GameplayEffectTypes.h"
 #include "AuraEffectActor.generated.h"
 
@@ -23,6 +24,21 @@ enum class EEffectRemovalPolicy : uint8
 	DoNotRemove
 };
 
+USTRUCT(BlueprintType)
+struct FGameplayEffectConfig
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSubclassOf<UGameplayEffect> GameplayEffectClass;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	EEffectApplicationPolicy ApplicationPolicy = EEffectApplicationPolicy::DoNotApply;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	EEffectRemovalPolicy RemovalPolicy = EEffectRemovalPolicy::DoNotRemove;
+};
+
 UCLASS()
 class AURA_API AAuraEffectActor : public AActor
 {
@@ -34,7 +50,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION(BlueprintCallable)
-	void ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> EffectToApplyClass);
+	void ApplyEffectToTarget(AActor* TargetActor, const FGameplayEffectConfig& EffectConfig);
 
 	UFUNCTION(BlueprintCallable)
 	void Overlap(AActor* TargetActor);
@@ -47,29 +63,13 @@ protected:
 	
 	// Effects can be of types Instant, Duration and Infinite.
 	// Instant effects apply changes to the BaseValue of attributes.
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Effects")
-	TSubclassOf<UGameplayEffect> InstantGameplayEffectClass;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Effects")
-	EEffectApplicationPolicy InstantEffectApplicationPolicy = EEffectApplicationPolicy::DoNotApply;
-	
 	// Duration effects apply changes to the CurrentValue of attributes, and after the specified duration, the CurrentValue will roll back to the BaseValue.
 	// Infinite effects apply changes to the CurrentValue of attributes, and if it's been discarded, the CurrentValue will roll back to the BaseValue.
 	// However, if the period of an effect isn't null and the effect is of type Infinite or Duration, the effect will be applied to the BaseValue.
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Effects")
-	TSubclassOf<UGameplayEffect> DurationGameplayEffectClass;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Effects")
-	EEffectApplicationPolicy DurationEffectApplicationPolicy = EEffectApplicationPolicy::DoNotApply;
-	
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Effects")
-	TSubclassOf<UGameplayEffect> InfiniteGameplayEffectClass;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Effects")
-	EEffectApplicationPolicy InfiniteEffectApplicationPolicy = EEffectApplicationPolicy::DoNotApply;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Effects")
-	EEffectRemovalPolicy InfiniteEffectRemovalPolicy = EEffectRemovalPolicy::RemoveOnEndOverlap;
+	TArray<FGameplayEffectConfig> EffectConfigs;
 private:
-	TMap<UAbilitySystemComponent*, FActiveGameplayEffectHandle> ActiveGameplayEffects;
+	// Special Quest: Multiple active effects
+	TMultiMap<TWeakObjectPtr<UAbilitySystemComponent>, FActiveGameplayEffectHandle> ActiveGameplayEffects;
 };

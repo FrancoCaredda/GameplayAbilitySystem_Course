@@ -16,9 +16,9 @@ void AAuraEffectActor::BeginPlay()
 	Super::BeginPlay();
 }
 
-void AAuraEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> EffectToApplyClass)
+void AAuraEffectActor::ApplyEffectToTarget(AActor* TargetActor, const FGameplayEffectConfig& EffectConfig)
 {
-	check(EffectToApplyClass);
+	check(EffectConfig.GameplayEffectClass);
 	UAbilitySystemComponent* AbilitySystemComponent =
 		UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
 
@@ -34,7 +34,7 @@ void AAuraEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGam
 		// FGameplayEffectSpecHandle is a lightweight structure that describes the effect itself (modifiers, levels, magnitudes, etc.).
 		// IMPORTANT: UGameplayEffect shouldn't contain any custom logic. It should be extended via blueprints and serve as data blueprint classes.
 		FGameplayEffectSpecHandle SpecHandle =
-			AbilitySystemComponent->MakeOutgoingSpec(EffectToApplyClass, 1.0f, EffectContextHandle);
+			AbilitySystemComponent->MakeOutgoingSpec(EffectConfig.GameplayEffectClass, 1.0f, EffectContextHandle);
 		FActiveGameplayEffectHandle ActiveGameplayEffectHandle =
 			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 
@@ -42,67 +42,49 @@ void AAuraEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGam
 			EGameplayEffectDurationType::Infinite;
 
 		if (bInfinite &&
-			InfiniteEffectRemovalPolicy == EEffectRemovalPolicy::RemoveOnEndOverlap) 
+			EffectConfig.RemovalPolicy == EEffectRemovalPolicy::RemoveOnEndOverlap) 
 		{
-			ActiveGameplayEffects.Add(AbilitySystemComponent, ActiveGameplayEffectHandle);
+			ActiveGameplayEffects.Add(AbilitySystemComponent,
+				ActiveGameplayEffectHandle);
 		}
 	}
 }
 
 void AAuraEffectActor::Overlap(AActor* TargetActor)
 {
-	if (InstantEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnOverlap)
+	for (const FGameplayEffectConfig& gameplayEffectConfig : EffectConfigs)
 	{
-		ApplyEffectToTarget(TargetActor, InstantGameplayEffectClass);
-	}
-
-	if (DurationEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnOverlap)
-	{
-		ApplyEffectToTarget(TargetActor, DurationGameplayEffectClass);
-	}
-
-	if (InfiniteEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnOverlap)
-	{
-		ApplyEffectToTarget(TargetActor, InfiniteGameplayEffectClass);
+		if (gameplayEffectConfig.ApplicationPolicy == EEffectApplicationPolicy::ApplyOnOverlap)
+		{
+			ApplyEffectToTarget(TargetActor, gameplayEffectConfig);
+		}
 	}
 }
 
 void AAuraEffectActor::EndOverlap(AActor* TargetActor)
 {
-	if (InstantEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnOverlap)
+	for (const FGameplayEffectConfig& gameplayEffectConfig : EffectConfigs)
 	{
-		ApplyEffectToTarget(TargetActor, InstantGameplayEffectClass);
-	}
-	
-	if (DurationEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnOverlap)
-	{
-		ApplyEffectToTarget(TargetActor, DurationGameplayEffectClass);
-	}
-
-	if (InfiniteEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnEndOverlap)
-	{
-		ApplyEffectToTarget(TargetActor, InfiniteGameplayEffectClass);
-	}
-
-	if (InfiniteEffectRemovalPolicy == EEffectRemovalPolicy::RemoveOnEndOverlap)
-	{
-		UAbilitySystemComponent* AbilitySystemComponent =
-			UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
-
-		// The author of the course used a loop here to iterate through the map.
-		// It can be avoided by simply swaping the types of keys and values when declaring the map.
-		// Will it crush? - I believe it'll not. Why? - Considering that the lifetime of the objects is handled by the GC the pointer should be safe.
-		// If I'm wrong, TWeakPtr should be used instead.
-		if (AbilitySystemComponent &&
-			ActiveGameplayEffects.Contains(AbilitySystemComponent))
+		if (gameplayEffectConfig.ApplicationPolicy == EEffectApplicationPolicy::ApplyOnEndOverlap)
 		{
-			FActiveGameplayEffectHandle ActiveGameplayEffectHandle =
-				ActiveGameplayEffects[AbilitySystemComponent];
-
-			AbilitySystemComponent->RemoveActiveGameplayEffect(ActiveGameplayEffectHandle, 1);
-			ActiveGameplayEffects.Remove(AbilitySystemComponent);
+			ApplyEffectToTarget(TargetActor, gameplayEffectConfig);
 		}
 	}
+
+	UAbilitySystemComponent* AbilitySystemComponent =
+		UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
+
+	if (AbilitySystemComponent &&
+		ActiveGameplayEffects.Contains(AbilitySystemComponent))
+	{
+		TArray<FActiveGameplayEffectHandle> ActiveGameplayEffectHandles;
+		ActiveGameplayEffects.MultiFind(AbilitySystemComponent, ActiveGameplayEffectHandles);
+
+		for (const FActiveGameplayEffectHandle& ActiveGameplayEffectHandle : ActiveGameplayEffectHandles)
+		{
+			AbilitySystemComponent->RemoveActiveGameplayEffect(ActiveGameplayEffectHandle, 1);
+		}
+		
+		ActiveGameplayEffects.Remove(AbilitySystemComponent);
+	}
 }
-
-
