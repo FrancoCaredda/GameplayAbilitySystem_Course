@@ -34,7 +34,7 @@ void AAuraEffectActor::ApplyEffectToTarget(AActor* TargetActor, const FGameplayE
 		// FGameplayEffectSpecHandle is a lightweight structure that describes the effect itself (modifiers, levels, magnitudes, etc.).
 		// IMPORTANT: UGameplayEffect shouldn't contain any custom logic. It should be extended via blueprints and serve as data blueprint classes.
 		FGameplayEffectSpecHandle SpecHandle =
-			AbilitySystemComponent->MakeOutgoingSpec(EffectConfig.GameplayEffectClass, 1.0f, EffectContextHandle);
+			AbilitySystemComponent->MakeOutgoingSpec(EffectConfig.GameplayEffectClass, ActorLevel, EffectContextHandle);
 		FActiveGameplayEffectHandle ActiveGameplayEffectHandle =
 			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 

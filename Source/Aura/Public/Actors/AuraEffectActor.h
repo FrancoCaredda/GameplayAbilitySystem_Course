@@ -69,6 +69,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Effects")
 	TArray<FGameplayEffectConfig> EffectConfigs;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Effects")
+	int ActorLevel = 1;
 private:
 	// Special Quest: Multiple active effects
 	TMultiMap<TWeakObjectPtr<UAbilitySystemComponent>, FActiveGameplayEffectHandle> ActiveGameplayEffects;

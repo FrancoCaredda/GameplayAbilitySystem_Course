@@ -12,6 +12,39 @@
 // 2. Register it for replication in GetLifetimeReplicatedProps
 // 3. Notify the GAS via the RepNotify OnRep_<variable_name>
 
+USTRUCT(BlueprintType)
+struct FPostGameplayEffectProperties
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAbilitySystemComponent* SourceAbilitySystemComponent = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AActor* SourceAvatarActor = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AController* SourceController = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ACharacter* SourceCharacter = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAbilitySystemComponent* TargetAbilitySystemComponent = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AActor* TargetAvatarActor = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AController* TargetController = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ACharacter* TargetCharacter = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayEffectContextHandle ContextHandle;
+};
+
 UCLASS()
 class AURA_API UAuraAttributeSet : public UAttributeSet
 {
@@ -20,6 +53,8 @@ public:
 	UAuraAttributeSet();
 
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 	
 	UFUNCTION()
 	void OnRep_Health(const FGameplayAttributeData& OldHealth) const;
@@ -56,5 +91,7 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxMana, Category = "Vital Attributes")
 	FGameplayAttributeData MaxMana;
+private:
+	FPostGameplayEffectProperties GetPostGameplayEffectProperties(const struct FGameplayEffectModCallbackData& Data) const;
 };
 
