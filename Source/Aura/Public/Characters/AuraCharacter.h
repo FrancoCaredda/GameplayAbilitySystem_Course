@@ -18,8 +18,9 @@ public:
 
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
+protected:
+	virtual void InitAbilitySystemComponent() override;
 private:
-	void InitAbilityActorInfo();
 	void InitHUD() const;
 private:
 	UPROPERTY(EditDefaultsOnly)

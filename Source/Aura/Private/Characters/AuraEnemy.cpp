@@ -22,6 +22,11 @@ void AAuraEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
+	InitAbilitySystemComponent();
+}
+
+void AAuraEnemy::InitAbilitySystemComponent()
+{
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 }
 

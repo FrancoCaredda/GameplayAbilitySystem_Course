@@ -4,6 +4,7 @@
 #include "Characters/AuraCharacter.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -42,7 +43,7 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	InitAbilityActorInfo();
+	InitAbilitySystemComponent();
 	InitHUD();
 }
 
@@ -52,11 +53,11 @@ void AAuraCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 
-	InitAbilityActorInfo();
+	InitAbilitySystemComponent();
 	InitHUD();
 }
 
-void AAuraCharacter::InitAbilityActorInfo()
+void AAuraCharacter::InitAbilitySystemComponent()
 {
 	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
 	check(AuraPlayerState);
@@ -69,6 +70,11 @@ void AAuraCharacter::InitAbilityActorInfo()
 	// The avatar is the actor that will operate with this component (in out case the Character)
 	// However there are cases when both of these pointers point to the same object (for ex. AI controlled characters)
 	AbilitySystemComponent->InitAbilityActorInfo(AuraPlayerState, this);
+
+	if (UAuraAbilitySystemComponent* AuraAbilitySystemComponent = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
+	{
+		AuraAbilitySystemComponent->InitComponent();
+	}
 }
 
 void AAuraCharacter::InitHUD() const

@@ -21,6 +21,7 @@ public:
 	virtual void UnHighlightActor() override;
 protected:
 	virtual void BeginPlay() override;
+	virtual void InitAbilitySystemComponent() override;
 protected:
 	UPROPERTY(BlueprintReadOnly)
 	bool IsHighlighted = false;

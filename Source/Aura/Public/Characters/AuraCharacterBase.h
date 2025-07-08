@@ -25,6 +25,8 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
+
+	virtual void InitAbilitySystemComponent() PURE_VIRTUAL(InitAbilitySystemComponent)
 protected:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
