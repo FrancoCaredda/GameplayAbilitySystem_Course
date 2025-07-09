@@ -75,7 +75,39 @@ public:
 	void OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const;
 
 	ATTRIBUTE_ACCESSORS_BASIC(UAuraAttributeSet, MaxMana)
+
+	UFUNCTION()
+	void OnRep_Strength(const FGameplayAttributeData& OldStrength) const;
+	
+	ATTRIBUTE_ACCESSORS_BASIC(UAuraAttributeSet, Strength);
+
+	UFUNCTION()
+	void OnRep_Intelligence(const FGameplayAttributeData& OldIntelligence) const;
+	
+	ATTRIBUTE_ACCESSORS_BASIC(UAuraAttributeSet, Intelligence);
+
+	UFUNCTION()
+	void OnRep_Resilience(const FGameplayAttributeData& OldResilience) const;
+	
+	ATTRIBUTE_ACCESSORS_BASIC(UAuraAttributeSet, Resilience);
+
+	UFUNCTION()
+	void OnRep_Vigor(const FGameplayAttributeData& OldVigor) const;
+	
+	ATTRIBUTE_ACCESSORS_BASIC(UAuraAttributeSet, Vigor);
 public:
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Strength, Category = "Primary Attributes")
+	FGameplayAttributeData Strength;
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Intelligence, Category = "Primary Attributes")
+	FGameplayAttributeData Intelligence;
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Resilience, Category = "Primary Attributes")
+	FGameplayAttributeData Resilience;
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Vigor, Category = "Primary Attributes")
+	FGameplayAttributeData Vigor;
+	
 	// An attribute contains two floats: BaseValue and CurrentValue.
 	// The BaseValue isn't the maximum value of this attribute.
 	// The BaseValue is the permanent value of the attribute and serves for permanent changes, such as: receiving damage, healing, etc.

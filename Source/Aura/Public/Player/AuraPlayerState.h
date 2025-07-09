@@ -27,7 +27,7 @@ public:
 protected:
 	// The central object of GAS. Maintains ability granting, their activation/deactivation, and attributes.
 	// Every class that has this component should implement the IAbilitySystemInterface
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
 	// An AttributeSet is a collection of attributes that define the character's stats

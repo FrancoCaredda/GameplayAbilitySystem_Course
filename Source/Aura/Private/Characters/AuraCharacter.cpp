@@ -45,6 +45,7 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 
 	InitAbilitySystemComponent();
 	InitHUD();
+	InitPrimaryAttributes();
 }
 
 // This function is called when the player state associated with this character has been replicated to the client
