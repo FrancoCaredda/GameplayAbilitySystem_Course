@@ -24,6 +24,13 @@ public:
 	{
 		return AttributeSet;
 	}
+
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
+	FORCEINLINE int32 GetPlayerLevel() const { return Level; }
+private:
+	UFUNCTION()
+	void OnRep_Level(int32 OldLevel);
 protected:
 	// The central object of GAS. Maintains ability granting, their activation/deactivation, and attributes.
 	// Every class that has this component should implement the IAbilitySystemInterface
@@ -33,4 +40,7 @@ protected:
 	// An AttributeSet is a collection of attributes that define the character's stats
 	UPROPERTY()
 	TObjectPtr<UAttributeSet> AttributeSet;
+private:
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_Level)
+	int32 Level = 1;
 };

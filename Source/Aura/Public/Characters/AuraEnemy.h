@@ -19,10 +19,15 @@ public:
 	
 	virtual void HighlightActor() override;
 	virtual void UnHighlightActor() override;
+
+	virtual int32 GetPlayerLevel() const override;
 protected:
 	virtual void BeginPlay() override;
 	virtual void InitAbilitySystemComponent() override;
 protected:
 	UPROPERTY(BlueprintReadOnly)
 	bool IsHighlighted = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
+	int32 Level = 1;
 };

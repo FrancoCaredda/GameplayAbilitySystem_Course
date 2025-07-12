@@ -95,6 +95,46 @@ public:
 	void OnRep_Vigor(const FGameplayAttributeData& OldVigor) const;
 	
 	ATTRIBUTE_ACCESSORS_BASIC(UAuraAttributeSet, Vigor);
+
+	UFUNCTION()
+	void OnRep_Armor(const FGameplayAttributeData& OldArmor) const;
+	
+	ATTRIBUTE_ACCESSORS_BASIC(UAuraAttributeSet, Armor);
+
+	UFUNCTION()
+	void OnRep_ArmorPenetration(const FGameplayAttributeData& OldArmorPenetration) const;
+	
+	ATTRIBUTE_ACCESSORS_BASIC(UAuraAttributeSet, ArmorPenetration);
+
+	UFUNCTION()
+	void OnRep_BlockChance(const FGameplayAttributeData& OldBlockChance) const;
+	
+	ATTRIBUTE_ACCESSORS_BASIC(UAuraAttributeSet, BlockChance);
+
+	UFUNCTION()
+	void OnRep_CriticalHitChance(const FGameplayAttributeData& OldCriticalHitChance) const;
+	
+	ATTRIBUTE_ACCESSORS_BASIC(UAuraAttributeSet, CriticalHitChance);
+
+	UFUNCTION()
+	void OnRep_CriticalHitDamage(const FGameplayAttributeData& OldCriticalHitDamage) const;
+	
+	ATTRIBUTE_ACCESSORS_BASIC(UAuraAttributeSet, CriticalHitDamage);
+
+	UFUNCTION()
+	void OnRep_CriticalHitResistance(const FGameplayAttributeData& OldCriticalHitResistance) const;
+	
+	ATTRIBUTE_ACCESSORS_BASIC(UAuraAttributeSet, CriticalHitResistance);
+
+	UFUNCTION()
+	void OnRep_HealthRegeneration(const FGameplayAttributeData& OldHealthRegeneration) const;
+	
+	ATTRIBUTE_ACCESSORS_BASIC(UAuraAttributeSet, HealthRegeneration);
+
+	UFUNCTION()
+	void OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration) const;
+	
+	ATTRIBUTE_ACCESSORS_BASIC(UAuraAttributeSet, ManaRegeneration);
 public:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Strength, Category = "Primary Attributes")
 	FGameplayAttributeData Strength;
@@ -107,6 +147,36 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Vigor, Category = "Primary Attributes")
 	FGameplayAttributeData Vigor;
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Armor, Category = "Secondary Attributes")
+	FGameplayAttributeData Armor;
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArmorPenetration, Category = "Secondary Attributes")
+	FGameplayAttributeData ArmorPenetration;
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_BlockChance, Category = "Secondary Attributes")
+	FGameplayAttributeData BlockChance;
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalHitChance, Category = "Secondary Attributes")
+	FGameplayAttributeData CriticalHitChance;
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalHitDamage, Category = "Secondary Attributes")
+	FGameplayAttributeData CriticalHitDamage;
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalHitDamage, Category = "Secondary Attributes")
+	FGameplayAttributeData CriticalHitResistance;
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_HealthRegeneration, Category = "Secondary Attributes")
+	FGameplayAttributeData HealthRegeneration;
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ManaRegeneration, Category = "Secondary Attributes")
+	FGameplayAttributeData ManaRegeneration;
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth, Category = "Secondary Attributes")
+	FGameplayAttributeData MaxHealth;
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxMana, Category = "Secondary Attributes")
+	FGameplayAttributeData MaxMana;
 	
 	// An attribute contains two floats: BaseValue and CurrentValue.
 	// The BaseValue isn't the maximum value of this attribute.
@@ -114,15 +184,9 @@ public:
 	// The CurrentValue is the temporary value of the attribute and serves for temporary changes, such as: buffs and debuffs.
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health, Category = "Vital Attributes")
 	FGameplayAttributeData Health;
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth, Category = "Vital Attributes")
-	FGameplayAttributeData MaxHealth;
-
+	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Mana, Category = "Vital Attributes")
 	FGameplayAttributeData Mana;
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxMana, Category = "Vital Attributes")
-	FGameplayAttributeData MaxMana;
 private:
 	FPostGameplayEffectProperties GetPostGameplayEffectProperties(const struct FGameplayEffectModCallbackData& Data) const;
 };

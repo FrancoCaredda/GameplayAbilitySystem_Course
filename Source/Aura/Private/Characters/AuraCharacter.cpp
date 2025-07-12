@@ -45,7 +45,9 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 
 	InitAbilitySystemComponent();
 	InitHUD();
-	InitPrimaryAttributes();
+	ApplyEffectToSelf(DefaultPrimaryAttributesEffectClass, 1);
+	ApplyEffectToSelf(DefaultSecondaryAttributesEffectClass, 1);
+	ApplyEffectToSelf(DefaultVitalAttributesEffectClass, 1);
 }
 
 // This function is called when the player state associated with this character has been replicated to the client
@@ -56,6 +58,14 @@ void AAuraCharacter::OnRep_PlayerState()
 
 	InitAbilitySystemComponent();
 	InitHUD();
+}
+
+int32 AAuraCharacter::GetPlayerLevel() const
+{
+	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+	check(AuraPlayerState);
+
+	return AuraPlayerState->GetPlayerLevel();
 }
 
 void AAuraCharacter::InitAbilitySystemComponent()
